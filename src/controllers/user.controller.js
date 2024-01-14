@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { EMAIL_REGEX, RESPONSE_STATUS_CODE } from "../constants.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import logger from "../logger.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   // get user details from the client request
@@ -47,6 +48,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const existedUser = await User.findOne({ $or: [{ username }, { email }] });
 
   if (existedUser) {
+    logger.log("error", "User already exists");
     return res
       .status(RESPONSE_STATUS_CODE.CONFLICT)
       .json(
@@ -91,6 +93,7 @@ const registerUser = asyncHandler(async (req, res) => {
   );
 
   if (!createdUser) {
+    logger.log("error", "User creation failed");
     return res
       .status(RESPONSE_STATUS_CODE.INTERNAL_SERVER_ERROR)
       .json(
