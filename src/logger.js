@@ -8,7 +8,7 @@ const myFormat = printf(({ level, message, label, timestamp }) => {
 
 const logger = createLogger({
   format: combine(
-    label({ label: "Chai Aur Backend" }),
+    label({ label: "Play With Backend" }),
     timestamp(),
     myFormat,
     colorize({ all: true })
