@@ -535,6 +535,87 @@ const updateCoverImage = asyncHandler(async (req, res) => {
     );
 });
 
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+  const { username } = req.params;
+
+  if (!username?.trim()) {
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Username required"])
+      );
+  }
+
+  const channel = await User.aggregate([
+    {
+      $match: {
+        username: username.toLowerCase(),
+      },
+    },
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "channel",
+        as: "subscribers",
+      },
+    },
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "subscriber",
+        as: "subscribedTo",
+      },
+    },
+    {
+      $addFields: {
+        subscribersCount: { $size: "$subscribers" },
+        channelSubscribedToCount: { $size: "$subscribedTo" },
+        isSubscribed: {
+          $cond: {
+            if: {
+              $in: [req.user?._id, "$subscribers.subscriber"],
+            },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        fullName: 1,
+        username: 1,
+        avatar: 1,
+        subscribersCount: 1,
+        channelSubscribedToCount: 1,
+        isSubscribed: 1,
+        coverImage: 1,
+        email: 1,
+      },
+    },
+  ]);
+
+  if (!channel?.length) {
+    return res
+      .status(RESPONSE_STATUS_CODE.NOT_FOUND)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.NOT_FOUND, ["Channel not found"])
+      );
+  }
+
+  return res
+    .status(RESPONSE_STATUS_CODE.SUCCESS)
+    .json(
+      new ApiResponse(
+        RESPONSE_STATUS_CODE.SUCCESS,
+        channel[0],
+        "Channel profile fetched successfully"
+      )
+    );
+});
+
 export {
   registerUser,
   loginUser,
@@ -545,4 +626,5 @@ export {
   updateAccountDetails,
   updateUserAvatar,
   updateCoverImage,
+  getUserChannelProfile,
 };
