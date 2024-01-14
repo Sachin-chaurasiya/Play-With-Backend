@@ -361,7 +361,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Invalid password"])
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Password mismatch"])
       );
   }
 
