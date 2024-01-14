@@ -293,4 +293,182 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+  // get the logged in user
+  // validate current password
+  // validate new password
+  // compare current password with new password
+  // update the password
+  // return response to the client
+
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
+          "current password and new password required",
+        ])
+      );
+  }
+
+  // req.user is available because of the auth middleware
+  const user = await User.findById(req.user?._id);
+
+  const isPasswordMatched = await user.isPasswordCorrect(currentPassword);
+
+  if (!isPasswordMatched) {
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Invalid password"])
+      );
+  }
+
+  user.password = newPassword;
+
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(RESPONSE_STATUS_CODE.SUCCESS)
+    .json(
+      new ApiResponse(RESPONSE_STATUS_CODE.SUCCESS, null, "Password changed")
+    );
+});
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+  return res
+    .status(RESPONSE_STATUS_CODE.SUCCESS)
+    .json(
+      new ApiResponse(
+        RESPONSE_STATUS_CODE.SUCCESS,
+        req.user,
+        "Current user fetched successfully"
+      )
+    );
+});
+
+const updateAccountDetails = asyncHandler(async (req, res) => {
+  const { fullName, email } = req.body;
+
+  if (!fullName || !email) {
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
+          "full name and email required",
+        ])
+      );
+  }
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    { $set: { fullName, email } },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  return res
+    .status(RESPONSE_STATUS_CODE.SUCCESS)
+    .json(
+      new ApiResponse(
+        RESPONSE_STATUS_CODE.SUCCESS,
+        user,
+        "Account details updated"
+      )
+    );
+});
+
+const updateUserAvatar = asyncHandler(async (req, res) => {
+  // here we will be having single file
+  const avatarLocalPath = req.file?.path;
+
+  if (!avatarLocalPath) {
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
+          "Avatar image is required",
+        ])
+      );
+  }
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  if (!avatar?.url) {
+    return res
+      .status(RESPONSE_STATUS_CODE.INTERNAL_SERVER_ERROR)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.INTERNAL_SERVER_ERROR, [
+          "Avatar upload failed",
+        ])
+      );
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    { $set: { avatar: avatar.url } },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  return res
+    .status(RESPONSE_STATUS_CODE.SUCCESS)
+    .json(
+      new ApiResponse(
+        RESPONSE_STATUS_CODE.SUCCESS,
+        user,
+        "Avatar updated successfully"
+      )
+    );
+});
+
+const updateCoverImage = asyncHandler(async (req, res) => {
+  const coverImageLocalPath = req.file?.path;
+
+  if (!coverImageLocalPath) {
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
+          "Cover image is required",
+        ])
+      );
+  }
+  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+
+  if (!coverImage?.url) {
+    return res
+      .status(RESPONSE_STATUS_CODE.INTERNAL_SERVER_ERROR)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.INTERNAL_SERVER_ERROR, [
+          "Cover image upload failed",
+        ])
+      );
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    { $set: { coverImage: coverImage.url } },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  return res
+    .status(RESPONSE_STATUS_CODE.SUCCESS)
+    .json(
+      new ApiResponse(
+        RESPONSE_STATUS_CODE.SUCCESS,
+        user,
+        "Cover image updated successfully"
+      )
+    );
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  changeCurrentPassword,
+  getCurrentUser,
+  updateAccountDetails,
+  updateUserAvatar,
+  updateCoverImage,
+};
