@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { EMAIL_REGEX } from "../constants.js";
+import { EMAIL_REGEX, RESPONSE_STATUS_CODE } from "../constants.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -16,36 +16,64 @@ const registerUser = asyncHandler(async (req, res) => {
   // check for user creation
   // return response to the client
 
+  const avatarLocalPath = req.files?.avatar?.[0]?.path;
+  const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
+
   const { username, email, fullName, password } = req.body;
 
   if (
     [username, email, fullName, password].some((field) => field?.trim() === "")
   ) {
-    throw new ApiError(400, "username, email, full name and password required");
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
+          "username, email, full name and password required",
+        ])
+      );
   }
 
   // validate email
   if (!EMAIL_REGEX.test(email)) {
-    throw new ApiError(400, "Invalid email address");
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
+          "Invalid email address",
+        ])
+      );
   }
 
   const existedUser = await User.findOne({ $or: [{ username }, { email }] });
 
   if (existedUser) {
-    throw new ApiError(409, "User with this username or email already exists");
+    return res
+      .status(RESPONSE_STATUS_CODE.CONFLICT)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.CONFLICT, ["User already exists"])
+      );
   }
 
-  const avatarLocalPath = req.files?.avatar?.[0]?.path;
-  const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
-
   if (!avatarLocalPath) {
-    throw new ApiError(400, "Avatar image is required");
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
+          "Avatar image is required",
+        ])
+      );
   }
   const avatar = await uploadOnCloudinary(avatarLocalPath);
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
   if (!avatar) {
-    throw new ApiError(500, "Avatar upload failed");
+    return res
+      .status(RESPONSE_STATUS_CODE.INTERNAL_SERVER_ERROR)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.INTERNAL_SERVER_ERROR, [
+          "Avatar upload failed",
+        ])
+      );
   }
 
   const user = await User.create({
@@ -57,16 +85,29 @@ const registerUser = asyncHandler(async (req, res) => {
     coverImage: coverImage?.url || "",
   });
 
+  // remove password and refresh token from user object
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
 
   if (!createdUser) {
-    throw new ApiError(500, "User creation failed");
+    return res
+      .status(RESPONSE_STATUS_CODE.INTERNAL_SERVER_ERROR)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.INTERNAL_SERVER_ERROR, [
+          "User creation failed",
+        ])
+      );
   }
   return res
-    .status(201)
-    .json(new ApiResponse(201, createdUser, "User registered successfully"));
+    .status(RESPONSE_STATUS_CODE.CREATED)
+    .json(
+      new ApiResponse(
+        RESPONSE_STATUS_CODE.CREATED,
+        createdUser,
+        "User registered successfully"
+      )
+    );
 });
 
 export { registerUser };
