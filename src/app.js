@@ -28,4 +28,11 @@ app.use(express.static("public"));
 // handle cookies
 app.use(cookieParser());
 
+// routes import
+import userRouter from "./routes/user.routes.js";
+import { API_ROUTE_PREFIX } from "./constants.js";
+
+// routes declaration
+app.use(`${API_ROUTE_PREFIX}/users`, userRouter);
+
 export { app };
