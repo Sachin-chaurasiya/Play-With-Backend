@@ -536,6 +536,12 @@ const updateCoverImage = asyncHandler(async (req, res) => {
     );
 });
 
+/**
+ * @description Get user channel profile
+ * @route GET /api/users/channel/:username
+ * @access Public
+ * @returns { message, data, error }
+ */
 const getUserChannelProfile = asyncHandler(async (req, res) => {
   const { username } = req.params;
 
@@ -617,6 +623,12 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     );
 });
 
+/**
+ * @description Get watch history
+ * @route GET /api/users/watch-history
+ * @access Private - only logged in user can access this route
+ * @returns { message, data, error }
+ */
 const getWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
     {
