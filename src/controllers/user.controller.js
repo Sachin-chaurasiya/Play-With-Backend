@@ -1,12 +1,21 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import {
+  deleteFromCloudinary,
+  getPublicIdFromUrl,
+  uploadOnCloudinary,
+} from "../utils/cloudinary.js";
 import { EMAIL_REGEX, RESPONSE_STATUS_CODE } from "../constants.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import logger from "../logger.js";
 import jwt from "jsonwebtoken";
 
+/**
+ *
+ * @param String userId
+ * @returns { accessToken, refreshToken }
+ */
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -26,6 +35,12 @@ const generateAccessAndRefreshTokens = async (userId) => {
   }
 };
 
+/**
+ * @description Register a new user
+ * @route POST /api/users/register
+ * @access Public
+ * @returns { message, data, error }
+ */
 const registerUser = asyncHandler(async (req, res) => {
   // get user details from the client request
   // validation - not empty, valid email, etc.
@@ -133,6 +148,12 @@ const registerUser = asyncHandler(async (req, res) => {
     );
 });
 
+/**
+ * @description Login a user
+ * @route POST /api/users/login
+ * @access Public
+ * @returns { message, data, error }
+ */
 const loginUser = asyncHandler(async (req, res) => {
   // get user details from the client request
   // validate user details - username or email, password
@@ -203,6 +224,12 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
+/**
+ * @description Logout a user
+ * @route POST /api/users/logout
+ * @access Private - only logged in user can access this route
+ * @returns { message, data, error }
+ */
 const logoutUser = asyncHandler(async (req, res) => {
   // get the logged in user
   // remove the refresh token from the database
@@ -227,6 +254,12 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(RESPONSE_STATUS_CODE.SUCCESS, null, "Logged out"));
 });
 
+/**
+ * @description Refresh access token
+ * @route POST /api/users/refresh-token
+ * @access Public
+ * @returns { message, data, error }
+ */
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies?.refreshToken ||
@@ -293,6 +326,12 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * @description Change current password
+ * @route POST /api/users/change-password
+ * @access Private - only logged in user can access this route
+ * @returns { message, data, error }
+ */
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   // get the logged in user
   // validate current password
@@ -337,6 +376,11 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     );
 });
 
+/**
+ * @description Get current user
+ * @route GET /api/users/me
+ * @access Private - only logged in user can access this route
+ */
 const getCurrentUser = asyncHandler(async (req, res) => {
   return res
     .status(RESPONSE_STATUS_CODE.SUCCESS)
@@ -349,6 +393,12 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     );
 });
 
+/**
+ * @description Update account details
+ * @route PATCH /api/users/me
+ * @access Private - only logged in user can access this route
+ * @returns { message, data, error }
+ */
 const updateAccountDetails = asyncHandler(async (req, res) => {
   const { fullName, email } = req.body;
 
@@ -378,6 +428,12 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     );
 });
 
+/**
+ * @description Update user avatar
+ * @route PATCH /api/users/me/avatar
+ * @access Private - only logged in user can access this route
+ * @returns { message, data, error }
+ */
 const updateUserAvatar = asyncHandler(async (req, res) => {
   // here we will be having single file
   const avatarLocalPath = req.file?.path;
@@ -403,6 +459,12 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
       );
   }
 
+  // delete the previous avatar from cloudinary
+  // get the public id from the url
+  // delete the image from cloudinary
+  const publicId = getPublicIdFromUrl(req.user?.avatar);
+  await deleteFromCloudinary(publicId);
+
   const user = await User.findByIdAndUpdate(
     req.user?._id,
     { $set: { avatar: avatar.url } },
@@ -420,6 +482,12 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     );
 });
 
+/**
+ * @description Update user cover image
+ * @route PATCH /api/users/me/cover-image
+ * @access Private - only logged in user can access this route
+ * @returns { message, data, error }
+ */
 const updateCoverImage = asyncHandler(async (req, res) => {
   const coverImageLocalPath = req.file?.path;
 
@@ -443,6 +511,12 @@ const updateCoverImage = asyncHandler(async (req, res) => {
         ])
       );
   }
+
+  // delete the previous coverImage from cloudinary
+  // get the public id from the url
+  // delete the image from cloudinary
+  const publicId = getPublicIdFromUrl(req.user?.coverImage);
+  await deleteFromCloudinary(publicId);
 
   const user = await User.findByIdAndUpdate(
     req.user?._id,
