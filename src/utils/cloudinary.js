@@ -2,6 +2,11 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import logger from "../logger.js";
 
+/**
+ * @description Uploads a file on cloudinary and returns the response
+ * @param {*} localFilePath
+ * @returns {Object}
+ */
 const uploadOnCloudinary = async (localFilePath) => {
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -25,6 +30,11 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 };
 
+/**
+ * @description Deletes a file from cloudinary
+ * @param {*} publicId
+ * @returns
+ */
 const deleteFromCloudinary = async (publicId) => {
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -41,6 +51,11 @@ const deleteFromCloudinary = async (publicId) => {
   }
 };
 
+/**
+ * @description Returns the public id of the file from the url
+ * @param {*} url
+ * @returns {string}
+ */
 const getPublicIdFromUrl = (url) => {
   if (!url) return null;
   const tokens = url.split("/");

@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 import { DB_NAME } from "../constants.js";
 import logger from "../logger.js";
 
+/**
+ * Connect to MongoDB database
+ * @returns {Promise<void>}
+ */
 export const connectToDatabase = async () => {
   try {
     const connectionInstance = await mongoose.connect(

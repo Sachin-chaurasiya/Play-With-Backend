@@ -1,3 +1,12 @@
+/**
+ * @class ApiError
+ * @extends Error
+ * @param {number} statusCode
+ * @param {Array} errors
+ * @param {string} message
+ * @param {string} stack
+ * @returns {ApiError}
+ */
 class ApiError extends Error {
   constructor(
     statusCode,
