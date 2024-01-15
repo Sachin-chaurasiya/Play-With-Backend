@@ -12,6 +12,8 @@ const sendEmail = async (html, emailId, subject) => {
     });
     if (error?.message) {
       throw error.message;
+    } else {
+      logger.info(`Onboarding Email sent to ${emailId}`);
     }
   } catch (error) {
     logger.error(`Error sending email: ${error}`);
