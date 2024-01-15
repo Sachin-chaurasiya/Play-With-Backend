@@ -13,11 +13,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiResponse(
-          RESPONSE_STATUS_CODE.BAD_REQUEST,
-          null,
-          "Video ID is required"
-        )
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is required"])
       );
   }
 
@@ -52,11 +48,7 @@ const addComment = asyncHandler(async (req, res) => {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiResponse(
-          RESPONSE_STATUS_CODE.BAD_REQUEST,
-          null,
-          "Video ID is required"
-        )
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is required"])
       );
   }
 
@@ -64,11 +56,7 @@ const addComment = asyncHandler(async (req, res) => {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiResponse(
-          RESPONSE_STATUS_CODE.BAD_REQUEST,
-          null,
-          "Content is required"
-        )
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Content is required"])
       );
   }
 
@@ -95,11 +83,9 @@ const updateComment = asyncHandler(async (req, res) => {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiResponse(
-          RESPONSE_STATUS_CODE.BAD_REQUEST,
-          null,
-          "Comment ID is required"
-        )
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
+          "Comment ID is required",
+        ])
       );
   }
 
@@ -109,11 +95,7 @@ const updateComment = asyncHandler(async (req, res) => {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiResponse(
-          RESPONSE_STATUS_CODE.BAD_REQUEST,
-          null,
-          "Content is required"
-        )
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Content is required"])
       );
   }
 
@@ -139,11 +121,9 @@ const deleteComment = asyncHandler(async (req, res) => {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiResponse(
-          RESPONSE_STATUS_CODE.BAD_REQUEST,
-          null,
-          "Comment ID is required"
-        )
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
+          "Comment ID is required",
+        ])
       );
   }
 
