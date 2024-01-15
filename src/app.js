@@ -42,7 +42,7 @@ import dashboardRouter from "./routes/dashboard.routes.js";
 
 // routes declaration
 app.use(`${API_ROUTE_PREFIX}/users`, userRouter);
-app.use(`${API_ROUTE_PREFIX}/healthCheck`, healthCheckRouter);
+app.use(`${API_ROUTE_PREFIX}/health-check`, healthCheckRouter);
 app.use(`${API_ROUTE_PREFIX}/tweets`, tweetRouter);
 app.use(`${API_ROUTE_PREFIX}/subscriptions`, subscriptionRouter);
 app.use(`${API_ROUTE_PREFIX}/videos`, videoRouter);
