@@ -11,3 +11,5 @@ export const RESPONSE_STATUS_CODE = {
   INTERNAL_SERVER_ERROR: 500,
   UNAUTHORIZED: 401,
 };
+
+export const REGISTER_EMAIL_SUBJECT = "Welcome to VideoTube!";

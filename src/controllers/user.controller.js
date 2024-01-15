@@ -6,11 +6,16 @@ import {
   getPublicIdFromUrl,
   uploadOnCloudinary,
 } from "../utils/cloudinary.js";
-import { EMAIL_REGEX, RESPONSE_STATUS_CODE } from "../constants.js";
+import {
+  EMAIL_REGEX,
+  REGISTER_EMAIL_SUBJECT,
+  RESPONSE_STATUS_CODE,
+} from "../constants.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import logger from "../logger.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { getRegisterEmailTemplate, sendEmail } from "../utils/email.js";
 
 /**
  *
@@ -138,6 +143,11 @@ const registerUser = asyncHandler(async (req, res) => {
         ])
       );
   }
+
+  // send email to the user
+  const emailTemplate = getRegisterEmailTemplate(createdUser.fullName);
+  await sendEmail(emailTemplate, createdUser.email, REGISTER_EMAIL_SUBJECT);
+
   return res
     .status(RESPONSE_STATUS_CODE.CREATED)
     .json(
