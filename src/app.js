@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { API_ROUTE_PREFIX } from "./constants.js";
 
 const app = express();
 
@@ -30,9 +31,24 @@ app.use(cookieParser());
 
 // routes import
 import userRouter from "./routes/user.routes.js";
-import { API_ROUTE_PREFIX } from "./constants.js";
+import healthCheckRouter from "./routes/healthcheck.routes.js";
+import tweetRouter from "./routes/tweet.routes.js";
+import subscriptionRouter from "./routes/subscription.routes.js";
+import videoRouter from "./routes/video.routes.js";
+import commentRouter from "./routes/comment.routes.js";
+import likeRouter from "./routes/like.routes.js";
+import playlistRouter from "./routes/playlist.routes.js";
+import dashboardRouter from "./routes/dashboard.routes.js";
 
 // routes declaration
 app.use(`${API_ROUTE_PREFIX}/users`, userRouter);
+app.use(`${API_ROUTE_PREFIX}/healthCheck`, healthCheckRouter);
+app.use(`${API_ROUTE_PREFIX}/tweets`, tweetRouter);
+app.use(`${API_ROUTE_PREFIX}/subscriptions`, subscriptionRouter);
+app.use(`${API_ROUTE_PREFIX}/videos`, videoRouter);
+app.use(`${API_ROUTE_PREFIX}/comments`, commentRouter);
+app.use(`${API_ROUTE_PREFIX}/likes`, likeRouter);
+app.use(`${API_ROUTE_PREFIX}/playlist`, playlistRouter);
+app.use(`${API_ROUTE_PREFIX}/dashboard`, dashboardRouter);
 
 export { app };
