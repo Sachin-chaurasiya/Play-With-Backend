@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { RESPONSE_STATUS_CODE } from "../constants.js";
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 
 const getVideoComments = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
@@ -14,6 +14,14 @@ const getVideoComments = asyncHandler(async (req, res) => {
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
         new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is required"])
+      );
+  }
+
+  if (!isValidObjectId(videoId)) {
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is invalid"])
       );
   }
 
@@ -100,6 +108,14 @@ const addComment = asyncHandler(async (req, res) => {
       );
   }
 
+  if (!isValidObjectId(videoId)) {
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is invalid"])
+      );
+  }
+
   if (!content) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
@@ -133,6 +149,16 @@ const updateComment = asyncHandler(async (req, res) => {
       .json(
         new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
           "Comment ID is required",
+        ])
+      );
+  }
+
+  if (!isValidObjectId(commentId)) {
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
+          "Comment ID is invalid",
         ])
       );
   }
@@ -171,6 +197,16 @@ const deleteComment = asyncHandler(async (req, res) => {
       .json(
         new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
           "Comment ID is required",
+        ])
+      );
+  }
+
+  if (!isValidObjectId(commentId)) {
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
+          "Comment ID is invalid",
         ])
       );
   }
