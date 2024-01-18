@@ -141,11 +141,15 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
       .json(new ApiError(RESPONSE_STATUS_CODE.NOT_FOUND, ["Video not found"]));
   }
 
-  await Playlist.updateOne({ _id: playlistId }, { $push: { videos: videoId } });
+  const updatedPlaylist = await Playlist.findByIdAndUpdate(
+    playlistId,
+    { $addToSet: { videos: videoId } },
+    { new: true }
+  ).populate("videos", "-owner");
 
   const response = new ApiResponse(
     RESPONSE_STATUS_CODE.SUCCESS,
-    null,
+    updatedPlaylist,
     "Video added to playlist successfully"
   );
 
@@ -188,11 +192,15 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
       .json(new ApiError(RESPONSE_STATUS_CODE.NOT_FOUND, ["Video not found"]));
   }
 
-  await Playlist.updateOne({ _id: playlistId }, { $pull: { videos: videoId } });
+  const updatedPlaylist = await Playlist.findByIdAndUpdate(
+    playlistId,
+    { $pull: { videos: videoId } },
+    { new: true }
+  );
 
   const response = new ApiResponse(
     RESPONSE_STATUS_CODE.SUCCESS,
-    null,
+    updatedPlaylist,
     "Video removed from playlist successfully"
   );
 
@@ -201,12 +209,12 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
 
 const deletePlaylist = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
-  if (!playlistId) {
+  if (!playlistId || !isValidObjectId(playlistId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
         new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
-          "Playlist ID is required",
+          "Playlist ID is invalid",
         ])
       );
   }
@@ -226,6 +234,17 @@ const updatePlaylist = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
   const { name, description } = req.body;
 
+  // if name is in the payload and it is empty, then we will trim it and throw error
+  const trimmedName = name?.trim();
+
+  if (trimmedName === "") {
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Name cannot be empty"])
+      );
+  }
+
   if (!playlistId || !isValidObjectId(playlistId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
@@ -236,17 +255,16 @@ const updatePlaylist = asyncHandler(async (req, res) => {
       );
   }
 
-  if (!name) {
-    return res
-      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
-      .json(
-        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Name is required"])
-      );
-  }
-
-  const playlist = await Playlist.findByIdAndUpdate(playlistId, {
-    $set: { name, description },
-  });
+  const playlist = await Playlist.findByIdAndUpdate(
+    playlistId,
+    {
+      $set: {
+        name: trimmedName,
+        description: description,
+      },
+    },
+    { new: true }
+  );
 
   const response = new ApiResponse(
     RESPONSE_STATUS_CODE.SUCCESS,
