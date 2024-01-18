@@ -3,7 +3,11 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import {
+  deleteFromCloudinary,
+  getPublicIdFromUrl,
+  uploadOnCloudinary,
+} from "../utils/cloudinary.js";
 import { RESPONSE_STATUS_CODE } from "../constants.js";
 import mongoose, { isValidObjectId } from "mongoose";
 
@@ -204,6 +208,20 @@ const updateVideo = asyncHandler(async (req, res) => {
       );
   }
 
+  // write logic to delete existing thumbnail from cloudinary
+
+  const existingVideo = await Video.findById(videoId);
+
+  if (!existingVideo) {
+    return res
+      .status(RESPONSE_STATUS_CODE.NOT_FOUND)
+      .json(new ApiError(RESPONSE_STATUS_CODE.NOT_FOUND, ["Video not found"]));
+  }
+
+  const thumbnailPublicId = getPublicIdFromUrl(existingVideo.thumbnail);
+
+  await deleteFromCloudinary(thumbnailPublicId);
+
   const video = await Video.findByIdAndUpdate(
     videoId,
     { $set: { title, description, thumbnail: thumbnail.secure_url } },
@@ -222,11 +240,11 @@ const updateVideo = asyncHandler(async (req, res) => {
 const deleteVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
 
-  if (!videoId) {
+  if (!videoId || !isValidObjectId(videoId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is required"])
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is invalid"])
       );
   }
 
@@ -244,11 +262,11 @@ const deleteVideo = asyncHandler(async (req, res) => {
 const togglePublishStatus = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
 
-  if (!videoId) {
+  if (!videoId || !isValidObjectId(videoId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is required"])
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is invalid"])
       );
   }
 
