@@ -78,6 +78,16 @@ const publishAVideo = asyncHandler(async (req, res) => {
   const videoLocalPath = req.files?.videoFile?.[0]?.path;
   const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
 
+  if (!title || !description) {
+    return res
+      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
+      .json(
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
+          "Title and description are required",
+        ])
+      );
+  }
+
   if (!videoLocalPath || !thumbnailLocalPath) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
