@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import { Playlist } from "../models/playlist.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -35,11 +35,11 @@ const createPlaylist = asyncHandler(async (req, res) => {
 const getUserPlaylists = asyncHandler(async (req, res) => {
   const { userId } = req.params;
 
-  if (!userId) {
+  if (!userId || !isValidObjectId(userId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["User ID is required"])
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["User ID is invalid"])
       );
   }
 
@@ -57,7 +57,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 const getPlaylistById = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
 
-  if (!playlistId) {
+  if (!playlistId || !isValidObjectId(playlistId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
@@ -108,12 +108,17 @@ const getPlaylistById = asyncHandler(async (req, res) => {
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
   const { playlistId, videoId } = req.params;
 
-  if (!playlistId || !videoId) {
+  if (
+    !playlistId ||
+    !videoId ||
+    !isValidObjectId(playlistId) ||
+    !isValidObjectId(videoId)
+  ) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
         new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
-          "Playlist ID and Video ID are required",
+          "Playlist ID and Video ID should be valid",
         ])
       );
   }
@@ -150,12 +155,17 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
   const { playlistId, videoId } = req.params;
 
-  if (!playlistId || !videoId) {
+  if (
+    !playlistId ||
+    !videoId ||
+    !isValidObjectId(playlistId) ||
+    !isValidObjectId(videoId)
+  ) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
         new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
-          "Playlist ID and Video ID are required",
+          "Playlist ID and Video ID should be valid",
         ])
       );
   }
@@ -216,12 +226,12 @@ const updatePlaylist = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
   const { name, description } = req.body;
 
-  if (!playlistId) {
+  if (!playlistId || !isValidObjectId(playlistId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
         new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
-          "Playlist ID is required",
+          "Playlist ID is invalid",
         ])
       );
   }
