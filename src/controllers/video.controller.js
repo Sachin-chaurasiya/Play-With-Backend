@@ -151,7 +151,10 @@ const getVideoById = asyncHandler(async (req, res) => {
       );
   }
 
-  const video = await Video.findById(videoId).populate("owner");
+  const video = await Video.findById(videoId).populate(
+    "owner",
+    "-password -refreshToken -watchHistory -createdAt -updatedAt -__v -coverImage"
+  );
 
   if (!video) {
     return res
