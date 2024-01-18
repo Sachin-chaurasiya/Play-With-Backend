@@ -3,15 +3,16 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { RESPONSE_STATUS_CODE } from "../constants.js";
+import { isValidObjectId } from "mongoose";
 
 const toggleSubscription = asyncHandler(async (req, res) => {
   const { channelId } = req.params;
-  if (!channelId) {
+  if (!channelId || !isValidObjectId(channelId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
         new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
-          "Channel ID is required",
+          "Channel ID is invalid",
         ])
       );
   }
@@ -22,7 +23,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
   });
 
   if (subscription) {
-    await subscription.remove();
+    await Subscription.findByIdAndDelete(subscription._id);
   } else {
     await Subscription.create({
       subscriber: req.user?._id,
@@ -54,7 +55,8 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
   }
 
   const subscribers = await Subscription.find({ channel: channelId }).populate(
-    "subscriber"
+    "subscriber",
+    "-refreshToken -password -createdAt -updatedAt -__v -watchHistory"
   );
 
   const response = new ApiResponse(
@@ -70,7 +72,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 const getSubscribedChannels = asyncHandler(async (req, res) => {
   const { subscriberId } = req.params;
 
-  if (!subscriberId) {
+  if (!subscriberId || !isValidObjectId(subscriberId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
@@ -82,7 +84,10 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
 
   const subscriptions = await Subscription.find({
     subscriber: subscriberId,
-  }).populate("channel");
+  }).populate(
+    "channel",
+    "-refreshToken -password -createdAt -updatedAt -__v -watchHistory"
+  );
 
   const response = new ApiResponse(
     RESPONSE_STATUS_CODE.SUCCESS,

@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { RESPONSE_STATUS_CODE } from "../constants.js";
+import { isValidObjectId } from "mongoose";
 
 const createTweet = asyncHandler(async (req, res) => {
   const { content } = req.body;
@@ -32,11 +33,11 @@ const createTweet = asyncHandler(async (req, res) => {
 const getUserTweets = asyncHandler(async (req, res) => {
   const { userId } = req.params;
 
-  if (!userId) {
+  if (!userId || !isValidObjectId(userId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["User ID is required"])
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["User ID is invalid"])
       );
   }
 
@@ -54,11 +55,11 @@ const getUserTweets = asyncHandler(async (req, res) => {
 const updateTweet = asyncHandler(async (req, res) => {
   const { tweetId } = req.params;
 
-  if (!tweetId) {
+  if (!tweetId || !isValidObjectId(tweetId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Tweet ID is required"])
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Tweet ID is invalid"])
       );
   }
 
@@ -90,11 +91,11 @@ const updateTweet = asyncHandler(async (req, res) => {
 const deleteTweet = asyncHandler(async (req, res) => {
   const { tweetId } = req.params;
 
-  if (!tweetId) {
+  if (!tweetId || !isValidObjectId(tweetId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Tweet ID is required"])
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Tweet ID is invalid"])
       );
   }
 
