@@ -270,7 +270,10 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
       );
   }
 
-  const video = await Video.findById(videoId);
+  const video = await Video.findById(videoId).populate(
+    "owner",
+    "-password -refreshToken -watchHistory -createdAt -updatedAt -__v -coverImage"
+  );
 
   if (!video) {
     return res
@@ -284,7 +287,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
   const response = new ApiResponse(
     RESPONSE_STATUS_CODE.SUCCESS,
-    null,
+    video,
     "Video publish status updated successfully"
   );
 
