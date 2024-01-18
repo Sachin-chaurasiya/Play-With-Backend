@@ -20,7 +20,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
   const like = await Like.findOne({ video: videoId, likedBy: userId });
 
   if (like) {
-    await like.remove();
+    await Like.findByIdAndDelete(like._id);
   } else {
     await Like.create({
       video: videoId,
@@ -55,7 +55,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
   const like = await Like.findOne({ comment: commentId, likedBy: userId });
 
   if (like) {
-    await like.remove();
+    await Like.findByIdAndDelete(like._id);
   } else {
     await Like.create({
       comment: commentId,
@@ -88,7 +88,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
   const like = await Like.findOne({ tweet: tweetId, likedBy: userId });
 
   if (like) {
-    await like.remove();
+    await Like.findByIdAndDelete(like._id);
   } else {
     await Like.create({
       tweet: tweetId,
