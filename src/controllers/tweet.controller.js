@@ -7,6 +7,7 @@ import { isValidObjectId } from "mongoose";
 
 const createTweet = asyncHandler(async (req, res) => {
   const { content } = req.body;
+  const userId = req.user?._id;
 
   if (!content) {
     return res
@@ -18,7 +19,7 @@ const createTweet = asyncHandler(async (req, res) => {
 
   const tweet = await Tweet.create({
     content,
-    owner: req.user?._id,
+    owner: userId,
   });
 
   const response = new ApiResponse(
@@ -33,7 +34,7 @@ const createTweet = asyncHandler(async (req, res) => {
 const getUserTweets = asyncHandler(async (req, res) => {
   const { userId } = req.params;
 
-  if (!userId || !isValidObjectId(userId)) {
+  if (!isValidObjectId(userId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
@@ -54,16 +55,15 @@ const getUserTweets = asyncHandler(async (req, res) => {
 
 const updateTweet = asyncHandler(async (req, res) => {
   const { tweetId } = req.params;
+  const { content } = req.body;
 
-  if (!tweetId || !isValidObjectId(tweetId)) {
+  if (!isValidObjectId(tweetId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
         new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Tweet ID is invalid"])
       );
   }
-
-  const { content } = req.body;
 
   if (!content) {
     return res
@@ -91,7 +91,7 @@ const updateTweet = asyncHandler(async (req, res) => {
 const deleteTweet = asyncHandler(async (req, res) => {
   const { tweetId } = req.params;
 
-  if (!tweetId || !isValidObjectId(tweetId)) {
+  if (!isValidObjectId(tweetId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
