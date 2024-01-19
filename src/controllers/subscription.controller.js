@@ -7,7 +7,8 @@ import { isValidObjectId } from "mongoose";
 
 const toggleSubscription = asyncHandler(async (req, res) => {
   const { channelId } = req.params;
-  if (!channelId || !isValidObjectId(channelId)) {
+  const userId = req.user?._id;
+  if (!isValidObjectId(channelId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
@@ -18,7 +19,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
   }
 
   const subscription = await Subscription.findOne({
-    subscriber: req.user?._id,
+    subscriber: userId,
     channel: channelId,
   });
 
@@ -26,7 +27,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     await Subscription.findByIdAndDelete(subscription._id);
   } else {
     await Subscription.create({
-      subscriber: req.user?._id,
+      subscriber: userId,
       channel: channelId,
     });
   }
@@ -44,7 +45,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
   const { channelId } = req.params;
 
-  if (!channelId) {
+  if (!isValidObjectId(channelId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
@@ -72,7 +73,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 const getSubscribedChannels = asyncHandler(async (req, res) => {
   const { subscriberId } = req.params;
 
-  if (!subscriberId || !isValidObjectId(subscriberId)) {
+  if (!isValidObjectId(subscriberId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
