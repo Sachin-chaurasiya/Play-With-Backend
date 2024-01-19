@@ -9,14 +9,6 @@ const getVideoComments = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   const { page = 1, limit = 10 } = req.query;
 
-  if (!videoId) {
-    return res
-      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
-      .json(
-        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is required"])
-      );
-  }
-
   if (!isValidObjectId(videoId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
@@ -100,14 +92,6 @@ const addComment = asyncHandler(async (req, res) => {
 
   const { content } = req.body;
 
-  if (!videoId) {
-    return res
-      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
-      .json(
-        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is required"])
-      );
-  }
-
   if (!isValidObjectId(videoId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
@@ -142,16 +126,7 @@ const addComment = asyncHandler(async (req, res) => {
 
 const updateComment = asyncHandler(async (req, res) => {
   const { commentId } = req.params;
-
-  if (!commentId) {
-    return res
-      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
-      .json(
-        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
-          "Comment ID is required",
-        ])
-      );
-  }
+  const { content } = req.body;
 
   if (!isValidObjectId(commentId)) {
     return res
@@ -162,8 +137,6 @@ const updateComment = asyncHandler(async (req, res) => {
         ])
       );
   }
-
-  const { content } = req.body;
 
   if (!content) {
     return res
@@ -190,16 +163,6 @@ const updateComment = asyncHandler(async (req, res) => {
 
 const deleteComment = asyncHandler(async (req, res) => {
   const { commentId } = req.params;
-
-  if (!commentId) {
-    return res
-      .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
-      .json(
-        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
-          "Comment ID is required",
-        ])
-      );
-  }
 
   if (!isValidObjectId(commentId)) {
     return res
