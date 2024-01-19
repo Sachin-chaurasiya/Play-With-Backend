@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { API_ROUTE_PREFIX } from "./constants.js";
+import { rateLimiter } from "./middlewares/ratelimit.middleware.js";
 
 const app = express();
 
@@ -28,6 +29,9 @@ app.use(express.static("public"));
 
 // handle cookies
 app.use(cookieParser());
+
+// rate limiter
+app.use(rateLimiter);
 
 // routes import
 import userRouter from "./routes/user.routes.js";
