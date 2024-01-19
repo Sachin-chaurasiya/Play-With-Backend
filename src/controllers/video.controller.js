@@ -147,11 +147,11 @@ const publishAVideo = asyncHandler(async (req, res) => {
 const getVideoById = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
 
-  if (!videoId) {
+  if (!isValidObjectId(videoId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
-        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is required"])
+        new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is invalid"])
       );
   }
 
@@ -180,7 +180,7 @@ const updateVideo = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
   const thumbnailLocalPath = req.file?.path;
 
-  if (!videoId) {
+  if (!isValidObjectId(videoId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
@@ -240,7 +240,7 @@ const updateVideo = asyncHandler(async (req, res) => {
 const deleteVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
 
-  if (!videoId || !isValidObjectId(videoId)) {
+  if (!isValidObjectId(videoId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
@@ -262,7 +262,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
 const togglePublishStatus = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
 
-  if (!videoId || !isValidObjectId(videoId)) {
+  if (!isValidObjectId(videoId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
