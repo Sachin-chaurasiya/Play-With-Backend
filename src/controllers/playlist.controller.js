@@ -35,7 +35,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
 const getUserPlaylists = asyncHandler(async (req, res) => {
   const { userId } = req.params;
 
-  if (!userId || !isValidObjectId(userId)) {
+  if (!isValidObjectId(userId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
@@ -57,12 +57,12 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 const getPlaylistById = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
 
-  if (!playlistId || !isValidObjectId(playlistId)) {
+  if (!isValidObjectId(playlistId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
         new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, [
-          "Playlist ID is required",
+          "Playlist ID is invalid",
         ])
       );
   }
@@ -108,12 +108,7 @@ const getPlaylistById = asyncHandler(async (req, res) => {
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
   const { playlistId, videoId } = req.params;
 
-  if (
-    !playlistId ||
-    !videoId ||
-    !isValidObjectId(playlistId) ||
-    !isValidObjectId(videoId)
-  ) {
+  if (!isValidObjectId(playlistId) || !isValidObjectId(videoId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
@@ -159,12 +154,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
   const { playlistId, videoId } = req.params;
 
-  if (
-    !playlistId ||
-    !videoId ||
-    !isValidObjectId(playlistId) ||
-    !isValidObjectId(videoId)
-  ) {
+  if (!isValidObjectId(playlistId) || !isValidObjectId(videoId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
@@ -209,7 +199,8 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
 
 const deletePlaylist = asyncHandler(async (req, res) => {
   const { playlistId } = req.params;
-  if (!playlistId || !isValidObjectId(playlistId)) {
+
+  if (!isValidObjectId(playlistId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
@@ -245,7 +236,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
       );
   }
 
-  if (!playlistId || !isValidObjectId(playlistId)) {
+  if (!isValidObjectId(playlistId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
