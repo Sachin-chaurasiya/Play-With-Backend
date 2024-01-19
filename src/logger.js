@@ -6,7 +6,7 @@ const { combine, timestamp, label, printf, colorize } = format;
  * Custom logger format.
  */
 const myFormat = printf(({ level, message, label, timestamp }) => {
-  return `[${label}] [${timestamp}] [${level}]: ${message}`;
+  return `[${level}] [${timestamp}] [${label}]: ${message}`;
 });
 
 /**
