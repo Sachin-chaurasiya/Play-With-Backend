@@ -7,15 +7,15 @@ import { isValidObjectId } from "mongoose";
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  if (!videoId || !isValidObjectId(videoId)) {
+  const userId = req.user?._id;
+
+  if (!isValidObjectId(videoId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
         new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Video ID is invalid"])
       );
   }
-
-  const userId = req.user?._id;
 
   const like = await Like.findOne({ video: videoId, likedBy: userId });
 
@@ -39,8 +39,9 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 
 const toggleCommentLike = asyncHandler(async (req, res) => {
   const { commentId } = req.params;
+  const userId = req.user?._id;
 
-  if (!commentId || !isValidObjectId(commentId)) {
+  if (!isValidObjectId(commentId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
@@ -49,8 +50,6 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
         ])
       );
   }
-
-  const userId = req.user?._id;
 
   const like = await Like.findOne({ comment: commentId, likedBy: userId });
 
@@ -74,16 +73,15 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 
 const toggleTweetLike = asyncHandler(async (req, res) => {
   const { tweetId } = req.params;
+  const userId = req.user?._id;
 
-  if (!tweetId || !isValidObjectId(tweetId)) {
+  if (!isValidObjectId(tweetId)) {
     return res
       .status(RESPONSE_STATUS_CODE.BAD_REQUEST)
       .json(
         new ApiError(RESPONSE_STATUS_CODE.BAD_REQUEST, ["Tweet ID is invalid"])
       );
   }
-
-  const userId = req.user?._id;
 
   const like = await Like.findOne({ tweet: tweetId, likedBy: userId });
 
