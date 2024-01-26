@@ -18,3 +18,42 @@ This Repository is for learning the backend development by building the project.
 - Resend
 - Multer
 - Cloudinary
+
+## Local development
+
+To run this project in local you should have account in these services
+- [MongoDB](https://www.mongodb.com)
+- [Resend](https://resend.com/overview)
+- [Cloudinary](https://cloudinary.com/)
+
+### Step 1: Fork the repo
+
+### Step 2: Clone the repo
+
+```shell
+git clone https://github.com/<your-name>/Play-With-Backend.git
+```
+### Step 3: Install the dependencies
+> Make sure your node version should be >=18.18.2
+
+```shell
+npm install
+```
+
+### Step 4: Create `.env` and copy the values from `.env.sample`
+
+> Make sure to update the environment variable values with actual values.
+
+![image](https://github.com/Sachin-chaurasiya/Play-With-Backend/assets/59080942/cd797f7e-755b-46d4-b9bc-5db5d3d8a086)
+
+
+### Step 5: Start the server
+
+```shell
+npm run dev
+```
+![image](https://github.com/Sachin-chaurasiya/Play-With-Backend/assets/59080942/e6f146cb-55cb-4f9d-81de-0d3da48a9322)
+
+
+---
+[Youtube Playlist](https://www.youtube.com/playlist?list=PLu71SKxNbfoBGh_8p_NS-ZAh6v7HhYqHW)
