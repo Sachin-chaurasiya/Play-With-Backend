@@ -44,8 +44,7 @@ npm install
 
 > Make sure to update the environment variable values with actual values.
 
-![image](https://github.com/Sachin-chaurasiya/Play-With-Backend/assets/59080942/cd797f7e-755b-46d4-b9bc-5db5d3d8a086)
-
+![image](https://github.com/Sachin-chaurasiya/Play-With-Backend/assets/59080942/627bdd42-7245-4688-825c-699129ccd9cf)
 
 ### Step 5: Start the server
 
