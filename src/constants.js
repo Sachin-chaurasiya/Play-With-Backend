@@ -14,3 +14,5 @@ export const RESPONSE_STATUS_CODE = {
 };
 
 export const REGISTER_EMAIL_SUBJECT = "Welcome to VideoTube!";
+
+export const CORS_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"];

@@ -1,17 +1,17 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { API_ROUTE_PREFIX } from "./constants.js";
+import { API_ROUTE_PREFIX, CORS_ORIGINS } from "./constants.js";
 import { rateLimiter } from "./middlewares/ratelimit.middleware.js";
 
 const app = express();
 
+const corsObject = cors({
+  origin: [...CORS_ORIGINS],
+});
+
 // handle cors
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN,
-  })
-);
+app.use(corsObject);
 
 // handle json
 app.use(
